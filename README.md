@@ -42,3 +42,22 @@ Após a execução das ordens de movimento, a posição final de cada robô ser�
 - Robô 1: (1, 3, N)
 - Robô 2: (5, 1, L)
 
+```
+Informe o tamanho do plano de coordenadas (formato: X Y):
+5 5
+Informe o número de robôs:
+2
+Robô 1:
+Informe a posição inicial e a direção (formato: X Y D):
+1 2 N
+Informe as ordens de movimento (formato: E, D ou M):
+EMEMEMEMM
+Robô 2:
+Informe a posição inicial e a direção (formato: X Y D):
+3 3 L
+Informe as ordens de movimento (formato: E, D ou M):
+MMRMMRMRRM
+Posição final do robô 1: 1,3,N
+Posição final do robô 2: 5,1,L
+``` 
+
