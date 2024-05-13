@@ -1,169 +1,170 @@
-﻿// Create an array called robot, which has x, y and facing position elements
-
-// Create a matrix called grid, populate it based on it's size
-
-// Receive commands from the user and assign the final position to the robot!
-
-// Seems pretty simple, but it's definitely not.
-
-namespace Robo
+﻿namespace Robo
 {
     internal class Program
     {
+        static int gridX, gridY;
         static int[,] grid;
-        static int x = 0;
-        static int y = 0;
+        static int robotX, robotY, robotValue, robotAngleValue;
 
-        static int[] robot = new int[3];
-        static int robotX = 0;
-        static int robotY = 0;
-        static int robotCoordinateValue;
+        // Direction logic
+        static Dictionary<char, int> robotAngle = new Dictionary<char, int>()
+        {
+            {'E', 0},
+            {'N', 90},
+            {'W', 180},
+            {'S', 270}
+        };
 
-        static int directionIncrement = 90;
         static void Main(string[] args)
         {
-            createMatrix();
+            defineGridSize();
+            populateGrid();
             createRobot();
-            showRobotInfo();
         }
 
-        // This functions creates the grid the robot(s) is supposed to explore. Then it creates a robot(or more), sets it's initial coordinates and direction.
-        static void createMatrix()
+        // Here, we ask for the grid size, since it's a rectangle, we need two different sizes.
+        static void defineGridSize()
         {
-            char robotDirection;
-            Console.WriteLine("Now, we will specify the size of the grid");
-            Console.WriteLine("Insert a first value and press enter. Then, insert another value and press enter again\n");
-            while (x == y)
+            Console.WriteLine("Plese, specify a size for the grid, type a value, press enter, then type another value and press enter: ");
+            gridX = int.Parse(Console.ReadLine());
+            gridY = int.Parse(Console.ReadLine());
+            while (checkGridValidity(gridX, gridY) != true)
             {
-                Console.WriteLine("The values can't be equal to each other, since the grid is rectangular");
-                if (int.TryParse(Console.ReadLine(), out x))
-                {
-                    Console.WriteLine($"One of the sides measures {x}");
-                }
-                if (int.TryParse(Console.ReadLine(), out y))
-                {
-                    Console.WriteLine($"The second side measures {y}\n");
-                }
+                Console.WriteLine("Since it's an rectangular area, the values cannot be equal to each other");
+                gridX = int.Parse(Console.ReadLine());
+                gridY = int.Parse(Console.ReadLine());
             }
-            grid = new int[x, y];
-            int setter = 0;
-            for (int i = 0; i < x; i++)
+            grid = new int[gridX, gridY];
+        }
+
+        // Used in defineGridSize() to check if the area is rectangular, takes two parameters, which are input from the user
+        static bool checkGridValidity(int x, int y)
+        {
+            if (x == y)
             {
-                for (int j = 0; j < y; j++)
+                return false;
+            }
+            return true;
+        }
+
+        // Two loops that we use to populate the array
+        static void populateGrid()
+        {
+            int setter = 0;
+            for (int i = 0; i < gridX; i++)
+            {
+                for (int j = 0; j < gridY; j++)
                 {
                     grid[i, j] = setter;
-                    setter = grid[i, j] + 1;
+                    setter++;
                 }
             }
-            Console.WriteLine($"The grid the robot will explore measures {grid.Length}\n");
-            Console.WriteLine($"{grid[1, 1]}");
+        }
+
+        // Checks if the robot X coordinate is available
+        static bool checkX(int x)
+        {
+            if (x > gridX)
+            {
+                Console.WriteLine("Please insert a valid value for the X coordinate, this value is higher than possible");
+                return false;
+            }
+            return true;
+        }
+
+        // Checks if the Y coordinate for the robot is available
+        static bool checkY(int y)
+        {
+            if (y > gridY)
+            {
+                Console.WriteLine("Please insert a valid value for the Y coordinate, this value is higher than possible");
+                return false;
+            }
+            return true;
+        }
+
+        // This determines the INITIAL angle of the robot
+        static bool determineAngle(char direction)
+        {
+            int numericUserInput;
+            if (robotAngle.ContainsKey(direction))
+            {
+                numericUserInput = robotAngle[direction];
+                Console.WriteLine("The angle is: " + numericUserInput);
+                Console.WriteLine($"The robot is facing {robotAngle[direction]}");
+                robotAngleValue = robotAngle[direction];
+                Console.WriteLine($"The robot's angle value: {robotAngleValue}");
+                return true;
+            }
+            return false;
         }
 
         static void createRobot()
         {
-            Console.WriteLine("Inform the x and y coordinates: ");
-            robotX = int.Parse(Console.ReadLine());
-            robotY = int.Parse(Console.ReadLine());
-            Console.WriteLine("Which direction is the robot facing? East-E, North-N, West-W or South-S?");
-            robot[2] = char.Parse(Console.ReadLine());
-            if (robot[2] == 'E')
-            {
-                robot[2] = 0;
-            }
-            else if (robot[2] == 'N')
-            {
-                robot[2] = 90;
-            }
-            else if (robot[2] == 'W')
-            {
-                robot[2] = 180;
-            }
-            else
-            {
-                robot[2] = 270;
-            }
-            Console.WriteLine($"The robot is on the {robotX},{robotY} coordinate!");
-            Console.WriteLine($"{grid[robotX, robotY]}");
-            Console.WriteLine($"The robot is facing, numerically: {robot[2]}");
-            receiveOrders();
-        }
+            Console.WriteLine("Write the initial coordinates of the robot: ");
 
-        static void receiveOrders()
-        {
-            char previousDirection = (char)robot[2];
-            Console.WriteLine("L - Turn 90 degrees to the left. R - Turn 90 deegres to the right. M - Move one point forward on the grid");
-            Console.WriteLine("Specify a list of movements like LRLRLRLRM, the robot will complete each of them in sequence");
-            string movementList = Console.ReadLine();
-            for (int i = 0; i < movementList.Length; i++)
+            robotX = int.Parse(Console.ReadLine()) - 1;
+            while (!checkX(robotX))
             {
-                char direction = movementList[i];
-                switch (direction)
-                {
-                    case 'L':
-                        turnLeft();
-                        break;
+                robotX = int.Parse(Console.ReadLine()) - 1;
+            }
 
-                    case 'R':
-                        turnRight();
-                        break;
+            robotY = int.Parse(Console.ReadLine()) - 1;
+            while (!checkY(robotY))
+            {
+                robotY = int.Parse(Console.ReadLine()) - 1;
+            }
+            robotValue = grid[robotX, robotY];
+            Console.WriteLine($"The robot is on the point {robotValue}");
 
-                    case 'M':
-                        move();
-                        break;
-                }
+            Console.WriteLine("Which direction is the robot facing? E, N, W, S");
+            char userInput = char.Parse(Console.ReadLine());
+            while (!determineAngle(userInput))
+            {
+                Console.WriteLine("Insert a valid direction");
+                userInput = char.Parse(Console.ReadLine());
             }
         }
 
-        static void checkFullCircle()
+        static void increaseAngleValue()
         {
-            if (robot[2] == 360)
+            robotAngleValue += 90;
+            if (robotAngleValue == 360)
             {
-                robot[2] = 0;
-            }
-        }
-        static void turnLeft()
-        {
-            robot[2] += directionIncrement;
-            checkFullCircle();
-        }
-
-        static void turnRight()
-        {
-            robot[2] -= directionIncrement;
-            if (robot[2] < 0)
-            {
-                robot[2] = 270;
+                robotAngleValue = 0;
+                Console.WriteLine(robotAngleValue);
             }
         }
 
-
-        static void move()
+        static void decreaseAngleValue()
         {
-            switch (robot[2])
+            robotAngleValue -= 90;
+            if (robotAngleValue == 270)
             {
-                case 0: // East
-                    robotX += 1;
+                robotAngleValue = 0;
+                Console.WriteLine(robotAngleValue);
+            }
+        }
+
+        static void changeAngle()
+        {
+            Console.WriteLine("The angle changes in increments of 90, specify a direction, right - R or left - L: ");
+            char direction = char.Parse(Console.ReadLine());
+            switch (direction)
+            {
+                case 'R':
+                    decreaseAngleValue();
                     break;
-
-                case 90: // North
-                    robotY += 1;
-                    break;
-
-                case 180:
-                    robotX -= 1;
-                    break;
-
-                case 270:
-                    robotY -= 1;
+                case 'L':
+                    increaseAngleValue();
                     break;
             }
+
         }
 
-        static void showRobotInfo()
+        static void receiveInputs()
         {
-            Console.WriteLine($"{robotX}, {robotY}, {robot[2]}");
+            changeAngle();
         }
-
-
     }
 }
