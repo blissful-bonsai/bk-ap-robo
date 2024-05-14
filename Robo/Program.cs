@@ -6,7 +6,7 @@
         static int[,] grid;
         static int robotX, robotY, robotValue, robotAngleValue;
 
-        // Direction logic
+        // Direction logic, not necessary actually, gonna leave it here until I'm sure it's not needed
         static Dictionary<char, int> robotAngle = new Dictionary<char, int>()
         {
             {'E', 0},
@@ -146,25 +146,62 @@
             }
         }
 
-        static void changeAngle()
+        //static void changeAngle()
+        //{
+        //    Console.WriteLine("The angle changes in increments of 90, specify a direction, right - R or left - L: ");
+        //    char direction = char.Parse(Console.ReadLine());
+        //    switch (direction)
+        //    {
+        //        case 'R':
+        //            decreaseAngleValue();
+        //            break;
+        //        case 'L':
+        //            increaseAngleValue();
+        //            break;
+        //    }
+        //}
+
+        static void moveRobot()
         {
-            Console.WriteLine("The angle changes in increments of 90, specify a direction, right - R or left - L: ");
-            char direction = char.Parse(Console.ReadLine());
-            switch (direction)
+            // Check dictionary value
+            switch (robotAngleValue)
             {
-                case 'R':
-                    decreaseAngleValue();
+                case 0:
+                    robotY += 1;
                     break;
-                case 'L':
-                    increaseAngleValue();
+
+                case 90:
+
+                    break;
+
+                case 180:
+
+                    break;
+
+                case 270:
+
                     break;
             }
-
         }
 
         static void receiveInputs()
         {
-            changeAngle();
+            string userInput = Console.ReadLine();
+            for (int i = 0; i <= userInput.Length; i++)
+            {
+                if (userInput[i] == 'M')
+                {
+                    moveRobot();
+                }
+                if (userInput[i] == 'R')
+                {
+                    decreaseAngleValue();
+                }
+                if (userInput[i] == 'L')
+                {
+                    increaseAngleValue();
+                }
+            }
         }
     }
 }
